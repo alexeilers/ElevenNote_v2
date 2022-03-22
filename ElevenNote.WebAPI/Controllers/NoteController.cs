@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElevenNote.Models;
 using ElevenNote.Models.Note;
 using ElevenNote.Services.Note;
 using Microsoft.AspNetCore.Authorization;
@@ -49,6 +50,25 @@ namespace ElevenNote.WebAPI.Controllers
             return detail is not null
                 ? Ok(detail)
                 : NotFound();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateNoteById([FromBody] NoteUpdate request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return await _noteService.UpdateNoteAsync(request)
+                ? Ok("Note was updated successfully.")
+                : BadRequest("Note could not be updated.");
+        }
+
+        [HttpDelete("{noteId:int}")]
+        public async Task<IActionResult> DeleteNote([FromRoute] int noteId)
+        {
+            return await _noteService.DeleteNoteAsync(noteId)
+                ? Ok($"Note {noteId} was deleted successfully.")
+                : BadRequest($"Note {noteId} could not be deleted.");
         }
     }
 }

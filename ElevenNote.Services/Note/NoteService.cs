@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ElevenNote.Data;
 using ElevenNote.Data.Entities;
+using ElevenNote.Models;
 using ElevenNote.Models.Note;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +72,33 @@ namespace ElevenNote.Services.Note
                 CreatedUtc = noteEntity.CreatedUtc,
                 ModifiedUtc = noteEntity.ModifiedUtc
             };
+        }
+
+        public async Task<bool> UpdateNoteAsync(NoteUpdate request)
+        {
+            var noteEntity = await _dbContext.Notes.FindAsync(request.Id);
+
+            if (noteEntity?.OwnerId != _userId)
+                return false;
+            
+            noteEntity.Title = request.Title;
+            noteEntity.Content = request.Content;
+            noteEntity.ModifiedUtc = DateTimeOffset.Now;
+
+            var numberOfChanges = await _dbContext.SaveChangesAsync();
+
+            return numberOfChanges == 1;
+        }
+
+        public async Task<bool> DeleteNoteAsync(int noteId)
+        {
+            var noteEntity = await _dbContext.Notes.FindAsync(noteId);
+
+            if (noteEntity?.OwnerId != _userId)
+                return false;
+
+            _dbContext.Notes.Remove(noteEntity);
+            return await _dbContext.SaveChangesAsync() == 1;
         }
     }
 }

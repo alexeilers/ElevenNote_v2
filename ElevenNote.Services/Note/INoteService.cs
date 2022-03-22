@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ElevenNote.Models;
 using ElevenNote.Models.Note;
 
 namespace ElevenNote.Services.Note
@@ -11,5 +12,7 @@ namespace ElevenNote.Services.Note
         Task<bool> CreateNoteAsync(NoteCreate request);
         Task<IEnumerable<NoteListItem>> GetAllNotesAsync();
         Task<NoteDetail> GetNoteByIdAsync(int noteId);
+        Task<bool> UpdateNoteAsync(NoteUpdate request);
+        Task<bool> DeleteNoteAsync(int noteId);
     }
 }
