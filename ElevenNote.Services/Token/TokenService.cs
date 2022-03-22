@@ -19,15 +19,24 @@ namespace ElevenNote.Services.Token
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
-        public TokenService(ApplicationDbContext context)
+        public TokenService(ApplicationDbContext context, IConfiguration configuration)
+    {
+        _context = context;
+        _configuration = configuration;
+    }
+
+        public async Task<TokenResponse> GetTokenAsync(TokenRequest model)
         {
-            _context = context;
-            _configuration = configuration;
+            var userEntity = await GetValidUserAsync(model);
+            if (userEntity is null)
+                return null;
+
+                return GenerateToken(userEntity);
         }
 
-        private async Task<UserEntity> GetValidUserAsync(TokenRequest model)
+        public async Task<UserEntity> GetValidUserAsync(TokenRequest model)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(userEntity => user.Username.ToLower() == model.Username.ToLower());
+            var userEntity = await _context.Users.FirstOrDefaultAsync(user => user.Username.ToLower() == model.Username.ToLower());
             if (userEntity is null)
                 return null;
 
